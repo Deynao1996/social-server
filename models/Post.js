@@ -1,22 +1,16 @@
-const mongoose = require('mongoose');
+import mongoose from 'mongoose'
 
+const PostSchema = new mongoose.Schema(
+  {
+    userId: { type: String, required: true },
+    descr: { type: String, max: 500 },
+    tags: { type: String, default: '' },
+    media: { src: { type: String }, blurhash: { type: String } },
+    likes: { type: Array, default: [] },
+    comments: { type: Array, default: [] },
+    mediaType: { type: String }
+  },
+  { timestamps: true }
+)
 
-const CommentsSchema = new mongoose.Schema({
-  userId: {type: String, required: true},
-  commentId: {type: String, required: true},
-  message: {type: String, required: true},
-  name: {type: String, required: true},
-  lastName: {type: String, required: true},
-  profilePicture: {type: String, required: true},
-}, {timestamps: true});
-
-const PostSchema = new mongoose.Schema({
-  userId: {type: String, required: true},
-  descr: {type: String, max: 500},
-  tags: {type: String, default: ''},
-  media: {type: String},
-  likes: {type: Array, default: []},
-  comments: {type: [CommentsSchema], default: []}
-}, {timestamps: true});
-
-module.exports = mongoose.model('Post', PostSchema);
+export default mongoose.model('Post', PostSchema)

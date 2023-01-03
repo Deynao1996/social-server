@@ -1,33 +1,50 @@
-const express = require('express');
-const app = express();
-const mongoose = require('mongoose');
-const dotenv = require('dotenv');
-const morgan = require('morgan');
-const helmet = require('helmet');
-const cors = require('cors');
-const usersRoute = require('./routes/users');
-const authRoute = require('./routes/auth');
-const postRoute = require('./routes/post');
-const messagesRoute = require('./routes/messages');
-const conversationsRoute = require('./routes/conversations');
+import express from 'express'
+import dotenv from 'dotenv'
+import mongoose from 'mongoose'
+import cors from 'cors'
+import helmet from 'helmet'
+import usersRouter from './routes/user.js'
+import authRouter from './routes/auth.js'
+import messageRouter from './routes/message.js'
+import notificationRouter from './routes/notification.js'
+import conversationRouter from './routes/conversation.js'
+import commentRouter from './routes/comment.js'
+import postsRouter from './routes/post.js'
+import { handleErrors } from './middlewares/handleErrors.js'
 
+dotenv.config()
+const app = express()
 
-app.use(cors());
-dotenv.config();
-app.use(express.json());
-app.use(helmet());
-app.use(morgan('common'));
+const connectToDataBase = async () => {
+  try {
+    await mongoose.connect(process.env.MONGO_URL)
+    console.log('Connected to MongoDB')
+  } catch (error) {
+    throw error
+  }
+}
 
-mongoose.connect(process.env.MONGO_URL)
-  .then(() => console.log('DBConnection Successful'))
-  .catch((e) => console.log(e));
+app.use(
+  cors({
+    origin: process.env.CLIENT_URL,
+    methods: 'GET, POST, DELETE, PUT',
+    credentials: true
+  })
+)
+app.use(express.json())
+app.use(helmet())
 
-app.use('/api/auth', authRoute);
-app.use('/api/users', usersRoute);
-app.use('/api/post', postRoute);
-app.use('/api/messages', messagesRoute);
-app.use('/api/conversations', conversationsRoute);
+app.use('/api/auth', authRouter)
+app.use('/api/users', usersRouter)
+app.use('/api/notifications', notificationRouter)
+app.use('/api/post', postsRouter)
+app.use('/api/messages', messageRouter)
+app.use('/api/conversations', conversationRouter)
+app.use('/api/comments', commentRouter)
+
+app.use(handleErrors())
 
 app.listen(process.env.PORT || 5000, () => {
-  console.log("Backend server is running!");
-});
+  connectToDataBase()
+  console.log('Connected to Server')
+})

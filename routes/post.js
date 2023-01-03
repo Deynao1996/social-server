@@ -1,111 +1,31 @@
-const router = require('express').Router();
-const Post = require('../models/Post');
-const User = require('../models/User');
+import express from 'express'
+import {
+  createPost,
+  deletePost,
+  getPost,
+  getTimeline,
+  likePost,
+  updatePost
+} from '../controllers/postController.js'
 
+const router = express.Router()
 
-//Create a post
-router.post('/create', async (req, res) => {
-  const newPost = new Post(req.body);
-
-  try {
-    const savedPost = await newPost.save();
-    res.status(200).json(savedPost);
-  } catch (error) {
-    res.status(500).json(e);
-  }
-});
+//Create post
+router.post('/create', createPost)
 
 //Update post
-router.put('/update/:id', async (req, res) => {
-  try {
-    const post = await Post.findById(req.params.id);
+router.put('/update/:id', updatePost)
 
-    if (post.userId === req.body.userId) {
-      await post.updateOne({$set: req.body});
-      res.status(200).json('Post has been updated');
-    } else {
-      res.status(403).json('You can update only your posts');
-    }
-  } catch (e) {
-    res.status(500).json(e);
-  }
-});
+//Delete post
+router.delete('/delete/:id', deletePost)
 
-//Delete post 
-router.delete('/delete/:id', async (req, res) => {
-  try {
-    const post = await Post.findById(req.params.id);
-    await post.deleteOne();
-    res.status(200).json('Post has been deleted');
-  } catch (e) {
-    res.status(500).json(e);
-  }
-});
-
-//Like / dislike post
-router.put('/like/:id', async (req, res) => {
-  try {
-    const post = await Post.findById(req.params.id);
-
-    if (post.likes.includes(req.body.userId)) {
-      await post.updateOne({$pull: {likes: req.body.userId}});
-      res.status(200).json('You disliked this post');
-    } else {
-      await post.updateOne({$push: {likes: req.body.userId}});
-      res.status(200).json('Post has been licked');
-    }
-  } catch (e) {
-    res.status(500).json(e);
-  }
-});
-
-//Add comment
-router.put('/comment/:id', async (req, res) => {
-  try {
-    const post = await Post.findById(req.params.id);
-    const {comments} = await Post.findOne({"_id": req.params.id}, {comments: {$elemMatch: {commentId: req.body.commentId}}});
-
-    if (comments.length == 0) {
-      await post.updateOne({$push: {comments: req.body}});
-    } else {
-      await post.updateOne({$pull: {comments: {commentId: req.body.commentId}}});
-    }
-    
-    res.status(200).json('Your comment has been changed');
-  } catch (e) {
-    res.status(500).json(e);
-  }
-});
+//Like / Dislike post
+router.put('/like/:id', likePost)
 
 //Get post
-router.get('/:id', async (req, res) => {
-  try {
-    const post = await Post.findById(req.params.id);
-    res.status(200).json(post);
-  } catch (e) {
-    res.status(500).json(e);
-  }
-});
+router.get('/:id', getPost)
 
 //Get timeline
-router.get('/timeline/:userId', async (req, res) => {
-  try {
-    const user = await User.findById(req.params.userId);
-    const userPosts = await Post.find({userId: req.params.userId});
-    const friendsPosts = await Promise.all(
-      user.following.map(friendId => {
-        return Post.find({userId: friendId});
-      })
-    );
+router.get('/', getTimeline)
 
-    const allPosts = userPosts.concat(...friendsPosts);
-    const sortedPosts = allPosts.sort((a, b) => {
-      return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
-    });
-    res.status(200).json(sortedPosts);
-  } catch (e) {
-    res.status(500).json(e);
-  }    
-});
-
-module.exports = router;
+export default router
