@@ -4,6 +4,12 @@ import { createError } from '../utils/error.js'
 import { ObjectId } from 'mongodb'
 
 export const updateUser = async (req, res, next) => {
+  if (process.env.APP_STATUS === 'demo') {
+    return next(
+      createError(403, 'You do not have permission to update user in demo mode')
+    )
+  }
+
   if (req.body.password) {
     req.body.password = CryptoJS.AES.encrypt(
       req.body.password,

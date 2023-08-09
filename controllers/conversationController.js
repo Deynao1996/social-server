@@ -2,6 +2,7 @@ import Conversation from '../models/Conversation.js'
 import User from '../models/User.js'
 import Message from '../models/Message.js'
 import { ObjectId } from 'mongodb'
+import { createError } from '../utils/error.js'
 
 export const createConversation = async (req, res, next) => {
   try {
@@ -33,6 +34,15 @@ export const getConversations = async (req, res, next) => {
 
 export const deleteConversation = async (req, res, next) => {
   try {
+    if (process.env.APP_STATUS === 'demo') {
+      return next(
+        createError(
+          403,
+          'You do not have permission to delete conversation in demo mode'
+        )
+      )
+    }
+
     await Conversation.findByIdAndDelete(req.params.id)
     await Message.deleteMany({ conversationId: req.params.id })
     res.status(200).json('Conversation has been deleted')

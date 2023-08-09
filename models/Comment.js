@@ -7,7 +7,8 @@ const CommentSchema = new mongoose.Schema(
     message: { type: String, required: true },
     name: { type: String, required: true },
     lastName: { type: String, required: true },
-    profilePicture: { type: String }
+    profilePicture: { type: String },
+    isTest: { type: Boolean, default: true }
   },
   { timestamps: true }
 )

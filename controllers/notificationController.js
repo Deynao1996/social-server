@@ -1,4 +1,5 @@
 import Notification from '../models/Notification.js'
+import { createError } from '../utils/error.js'
 
 export const createNotification = async (req, res, next) => {
   const newNotification = new Notification(req.body)
@@ -26,6 +27,15 @@ export const updateNotification = async (req, res, next) => {
 
 export const deleteAllNotifications = async (req, res, next) => {
   try {
+    if (process.env.APP_STATUS === 'demo') {
+      return next(
+        createError(
+          403,
+          'You do not have permission to clear notifications in demo mode'
+        )
+      )
+    }
+
     await Notification.deleteMany({
       receiverId: req.params.id,
       type: { $ne: 'new-message' }

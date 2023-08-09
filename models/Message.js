@@ -8,7 +8,8 @@ const MessageSchema = new mongoose.Schema(
       fullName: { type: String, required: true },
       profilePicture: { type: String, default: '' }
     },
-    text: { type: String, required: true }
+    text: { type: String, required: true },
+    isTest: { type: Boolean, default: true }
   },
   { timestamps: true }
 )

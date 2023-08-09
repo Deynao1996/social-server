@@ -8,7 +8,8 @@ const PostSchema = new mongoose.Schema(
     media: { src: { type: String }, blurhash: { type: String } },
     likes: { type: Array, default: [] },
     comments: { type: Array, default: [] },
-    mediaType: { type: String }
+    mediaType: { type: String },
+    isTest: { type: Boolean, default: true }
   },
   { timestamps: true }
 )

@@ -47,7 +47,8 @@ const UserSchema = new mongoose.Schema(
       default: 'No information yet',
       lowercase: true
     },
-    relationship: { type: Number, enum: [0, 1, 2, 3] }
+    relationship: { type: Number, enum: [0, 1, 2, 3] },
+    isTest: { type: Boolean, default: true }
   },
   { timestamps: true }
 )

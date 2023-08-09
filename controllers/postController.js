@@ -39,6 +39,15 @@ export const updatePost = async (req, res, next) => {
 
 export const deletePost = async (req, res, next) => {
   try {
+    if (process.env.APP_STATUS === 'demo') {
+      return next(
+        createError(
+          403,
+          'You do not have permission to delete posts in demo mode'
+        )
+      )
+    }
+
     const post = await Post.findById(req.params.id)
     await Comment.deleteMany({ postId: req.params.id })
     await post.deleteOne()
