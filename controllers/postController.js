@@ -2,7 +2,6 @@ import Post from '../models/Post.js'
 import User from '../models/User.js'
 import Comment from '../models/Comment.js'
 import { createError } from '../utils/error.js'
-import { encodeImage } from '../utils/encodeImage.js'
 import mongoose from 'mongoose'
 
 export const createPost = async (req, res, next) => {
@@ -10,10 +9,6 @@ export const createPost = async (req, res, next) => {
   const newPost = new Post(rest)
 
   try {
-    if (req.body.mediaType === 'image') {
-      const blurHashImage = await encodeImage(media)
-      newPost.media.blurhash = blurHashImage
-    }
     newPost.media.src = media
     const savedPost = await newPost.save()
     res.status(200).json(savedPost)

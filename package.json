@@ -11,8 +11,6 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "blurhash": "^2.0.4",
-    "canvas": "^2.10.2",
     "cors": "^2.8.5",
     "crypto-js": "^4.1.1",
     "dotenv": "^14.3.2",
@@ -25,6 +23,6 @@
   },
   "devDependencies": {
     "eslint-config-prettier": "^8.5.0",
-    "eslint": "^8.28.0",
+    "eslint": "^8.28.0"
   }
 }
